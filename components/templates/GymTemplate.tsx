@@ -394,7 +394,7 @@ export function GymTemplate({ data }: TemplateProps) {
                 popular: false
               }
             ].map((plan, index) => (
-              <div key={index} className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative ${plan.popular ? 'ring-2 ring-offset-2' : ''}`} style={{ ringColor: plan.popular ? colors.primary : 'transparent' }}>
+              <div key={index} className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative ${plan.popular ? 'ring-2 ring-offset-2' : ''}`} style={{ borderColor: plan.popular ? colors.primary : 'transparent' }}>
                 {plan.popular && (
                   <div 
                     className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full text-white font-bold text-sm"
