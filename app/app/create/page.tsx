@@ -198,8 +198,7 @@ export default function CreateDemoPage() {
                         businessType: formData.businessType,
                         tagline: formData.tagline || 'Your business tagline',
                         pages: 5,
-                        primaryColor: formData.primaryColor,
-                        logoUrl: formData.logoFile ? URL.createObjectURL(formData.logoFile) : undefined
+                        primaryColor: formData.primaryColor
                       }}
                     />
                   </div>
