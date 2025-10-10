@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Upload, Palette, Eye } from 'lucide-react'
+import { ArrowLeft, Palette, Eye } from 'lucide-react'
 import Link from 'next/link'
 import { FirebaseStorageManager } from '../../../lib/firebaseStorage'
 import { TemplateRenderer } from '../../../components/templates/TemplateRenderer'
@@ -34,19 +34,11 @@ export default function CreateDemoPage() {
     businessType: 'gym',
     businessName: '',
     primaryColor: '#3b82f6',
-    tagline: '',
-    logoFile: null as File | null
+    tagline: ''
   })
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-  }
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      handleInputChange('logoFile', file)
-    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,20 +46,13 @@ export default function CreateDemoPage() {
     setLoading(true)
     
     try {
-      // Convert logo to data URL if present
-      let logoUrl = ''
-      if (formData.logoFile) {
-        logoUrl = await FirebaseStorageManager.fileToDataUrl(formData.logoFile)
-      }
-
       // Save demo to Firestore
       const demo = await FirebaseStorageManager.saveDemo({
         businessType: formData.businessType,
         businessName: formData.businessName,
         tagline: formData.tagline,
         pages: 5, // Fixed to 5 pages
-        primaryColor: formData.primaryColor,
-        logoUrl: logoUrl || undefined
+        primaryColor: formData.primaryColor
       })
 
       // Redirect to success page
@@ -186,42 +171,6 @@ export default function CreateDemoPage() {
                       ))}
                     </div>
                   </div>
-                </div>
-
-                {/* Logo Upload */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Upload className="inline h-4 w-4 mr-1" />
-                    Logo (Optional)
-                  </label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400">
-                    <div className="space-y-1 text-center">
-                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                      <div className="flex text-sm text-gray-600">
-                        <label
-                          htmlFor="logo-upload"
-                          className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                        >
-                          <span>Upload a file</span>
-                          <input
-                            id="logo-upload"
-                            name="logo-upload"
-                            type="file"
-                            accept="image/*"
-                            className="sr-only"
-                            onChange={handleFileUpload}
-                          />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                    </div>
-                  </div>
-                  {formData.logoFile && (
-                    <p className="mt-2 text-sm text-gray-600">
-                      Selected: {formData.logoFile.name}
-                    </p>
-                  )}
                 </div>
 
                 {/* Submit Button */}
