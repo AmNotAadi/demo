@@ -1,0 +1,22 @@
+[
+  {
+    "collectionGroup": "public_demos",
+    "queryScope": "COLLECTION",
+    "fields": [
+      {
+        "fieldPath": "expireAt",
+        "order": "ASCENDING"
+      }
+    ]
+  },
+  {
+    "collectionGroup": "private_demo_meta",
+    "queryScope": "COLLECTION",
+    "fields": [
+      {
+        "fieldPath": "createdAt",
+        "order": "DESCENDING"
+      }
+    ]
+  }
+]
