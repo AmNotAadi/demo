@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { FirebaseStorageManager, Demo } from '../../../lib/firebaseStorage'
 import { TemplateRenderer } from '../../../components/templates/TemplateRenderer'
 
+export const runtime = 'edge'
+
 interface DemoViewerProps {
   params: {
     demoId: string
