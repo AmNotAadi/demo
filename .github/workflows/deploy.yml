@@ -1,10 +1,11 @@
 name: Deploy to Vercel and Firebase
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+# Disabled until secrets are configured
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
 
 jobs:
   deploy-frontend:
