@@ -8,13 +8,15 @@ const nextConfig = {
     domains: ['images.unsplash.com'],
   },
   webpack: (config, { isServer }) => {
-    // When bundling for the client, alias `undici` to false so webpack
-    // doesn't try to bundle Node-only internals that cause parse errors.
+    // When bundling for the client, alias Node-only modules to false
     if (!isServer) {
       config.resolve = config.resolve || {}
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         undici: false,
+        'undici/lib/web/fetch/util': false,
+        'undici/lib/web/fetch/headers': false,
+        'undici/index': false,
       }
     }
 
@@ -24,6 +26,8 @@ const nextConfig = {
       net: false,
       tls: false,
       encoding: false,
+      child_process: false,
+      crypto: false,
     };
 
     return config;
