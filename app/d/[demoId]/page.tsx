@@ -42,22 +42,33 @@ export default function DemoViewer({ params }: DemoViewerProps) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Demo Not Found</h1>
-          <p className="text-gray-600 mb-8">The demo you're looking for doesn't exist or has been deleted.</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Website Not Found</h1>
+          <p className="text-gray-600 mb-8">The website you're looking for doesn't exist or has been deleted.</p>
           <a href="/" className="text-primary-600 hover:text-primary-500">Go Home</a>
         </div>
       </div>
     )
   }
 
-  // Convert LocalDemo to TemplateData format
+  // Convert stored data to TemplateData format
   const templateData = {
     businessName: demo.businessName,
     businessType: demo.businessType,
     tagline: demo.tagline,
     pages: demo.pages,
     primaryColor: demo.primaryColor,
-    logoUrl: demo.logoUrl
+    accentColor: demo.accentColor,
+    backgroundColor: demo.backgroundColor,
+    backgroundOpacity: demo.backgroundOpacity,
+    titleFont: demo.titleFont,
+    phoneNumber: demo.phoneNumber,
+    address: demo.address,
+    logoUrl: demo.logoUrl,
+    heroImageUrl: demo.heroImageUrl,
+    classImage1Url: demo.classImage1Url,
+    classImage2Url: demo.classImage2Url,
+    classImage3Url: demo.classImage3Url,
+    aboutImageUrl: demo.aboutImageUrl
   }
 
   return <TemplateRenderer data={templateData} />

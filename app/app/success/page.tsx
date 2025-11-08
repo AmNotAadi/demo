@@ -35,15 +35,15 @@ export default function SuccessPage() {
         <div className="text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Demo Created Successfully!
+            Website Created Successfully!
           </h1>
           <p className="text-gray-600 mb-6">
-            Your demo website is ready to share with prospects.
+            Your website is ready to share with prospects.
           </p>
           
           {demoId && (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-gray-500 mb-2">Demo ID:</p>
+              <p className="text-sm text-gray-500 mb-2">Website ID:</p>
               <p className="font-mono text-lg font-semibold text-gray-900">{demoId}</p>
             </div>
           )}
@@ -70,7 +70,7 @@ export default function SuccessPage() {
                 className="inline-flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                View Demo
+                View Website
               </a>
             </div>
           )}
@@ -88,7 +88,7 @@ export default function SuccessPage() {
               href="/app/create"
               className="inline-flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
-              Create Another Demo
+              Create Another Website
             </Link>
           </div>
         </div>

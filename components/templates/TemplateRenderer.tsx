@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { TemplateData } from './GymTemplate'
 import { GymTemplate } from './GymTemplate'
 import { RestaurantTemplate } from './RestaurantTemplate'
@@ -5,7 +6,7 @@ import { CafeTemplate } from './CafeTemplate'
 import { JewelryTemplate } from './JewelryTemplate'
 import { SalonTemplate } from './SalonTemplate'
 
-export function TemplateRenderer({ data }: { data: TemplateData }) {
+function TemplateRendererComponent({ data }: { data: TemplateData }) {
   switch (data.businessType) {
     case 'gym':
       return <GymTemplate data={data} />
@@ -21,3 +22,9 @@ export function TemplateRenderer({ data }: { data: TemplateData }) {
       return <GymTemplate data={data} />
   }
 }
+
+// Memoize to prevent unnecessary re-renders
+export const TemplateRenderer = memo(TemplateRendererComponent, (prevProps, nextProps) => {
+  // Deep comparison of data object
+  return JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data)
+})

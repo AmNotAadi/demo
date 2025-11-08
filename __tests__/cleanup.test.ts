@@ -57,7 +57,8 @@ describe('Cleanup Expired Demos', () => {
     ]
 
     demos.forEach(demo => {
-      const isExpired = demo.expireAt < now
+      // treat expireAt equal to now as expired
+      const isExpired = demo.expireAt <= now
       expect(isExpired).toBe(demo.shouldBeDeleted)
     })
   })
@@ -120,7 +121,8 @@ describe('Cleanup Expired Demos', () => {
 
     scenarios.forEach(scenario => {
       const expireAt = scenario.createdAt + threeDaysInMs
-      const isExpired = expireAt < now
+      // treat expiry at exactly `now` as expired
+      const isExpired = expireAt <= now
       expect(isExpired).toBe(scenario.shouldExpire)
     })
   })

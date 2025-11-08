@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Eye, Copy, ExternalLink, BarChart3, Trash2 } from 'lucide-react'
+import { Plus, Eye, Copy, ExternalLink, BarChart3, Trash2, Download } from 'lucide-react'
 import Link from 'next/link'
 import { FirebaseStorageManager, Demo } from '../../lib/firebaseStorage'
+import { generateStandaloneHTML } from '../../lib/websiteGenerator'
 
 export default function AppDashboard() {
   const [demos, setDemos] = useState<Demo[]>([])
@@ -23,12 +24,71 @@ export default function AppDashboard() {
   }, [])
 
   const deleteDemo = async (id: string) => {
-    if (confirm('Are you sure you want to delete this demo?')) {
+    if (confirm('Are you sure you want to delete this website?')) {
       await FirebaseStorageManager.deleteDemo(id)
       const updatedDemos = await FirebaseStorageManager.getAllDemos()
       const updatedStats = await FirebaseStorageManager.getStats()
       setDemos(updatedDemos)
       setStats(updatedStats)
+    }
+  }
+
+  const downloadWebsite = async (demo: Demo) => {
+    try {
+      // Dynamically import JSZip
+      const JSZip = (await import('jszip')).default
+      const zip = new JSZip()
+
+      // Generate standalone HTML
+      const html = generateStandaloneHTML(demo)
+      zip.file('index.html', html)
+
+      // Create a README file
+      const readme = `# ${demo.businessName} Website
+
+This website was created using Regrowth Website Builder.
+
+## Details
+- Business: ${demo.businessName}
+- Type: ${demo.businessType}
+- Created: ${new Date(demo.createdAt).toLocaleDateString()}
+
+## To Use This Website
+
+1. Open index.html in a web browser to preview
+2. Upload all files to your web hosting service
+3. Customize as needed
+
+## Hosting Options
+- Netlify (netlify.com) - Drag and drop deployment
+- Vercel (vercel.com) - Git-based deployment
+- GitHub Pages (pages.github.com) - Free hosting
+- Any standard web hosting service
+
+## Notes
+- All styles are inline for easy deployment
+- Images are referenced by URL
+- No build process required
+- Mobile responsive design included
+
+Website ID: ${demo.id}
+`
+
+      zip.file('README.md', readme)
+
+      // Generate and download the ZIP
+      const blob = await zip.generateAsync({ type: 'blob' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${demo.businessName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-website.zip`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error downloading website:', error)
+      alert('Failed to download website. Please try again.')
     }
   }
 
@@ -39,8 +99,8 @@ export default function AppDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Demo Builder</h1>
-              <p className="text-gray-600">Welcome! Create and manage your demo websites</p>
+              <h1 className="text-3xl font-bold text-gray-900">Website Builder</h1>
+              <p className="text-gray-600">Welcome! Create and manage your websites</p>
             </div>
             <div className="flex items-center space-x-4">
               <Link
@@ -48,7 +108,7 @@ export default function AppDashboard() {
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Create Demo
+                Create Website
               </Link>
               <Link
                 href="/"
@@ -75,7 +135,7 @@ export default function AppDashboard() {
                   <div className="ml-5 w-0 flex-1">
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">
-                        Active Demos
+                        Active Websites
                       </dt>
                       <dd className="text-lg font-medium text-gray-900">{stats.activeDemos}</dd>
                     </dl>
@@ -111,7 +171,7 @@ export default function AppDashboard() {
                   <div className="ml-5 w-0 flex-1">
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">
-                        Demos Created
+                        Websites Created
                       </dt>
                       <dd className="text-lg font-medium text-gray-900">{stats.totalDemos}</dd>
                     </dl>
@@ -121,20 +181,20 @@ export default function AppDashboard() {
             </div>
           </div>
 
-          {/* Recent Demos */}
+          {/* Recent Websites */}
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <div className="px-4 py-5 sm:px-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Recent Demos
+                Recent Websites
               </h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                Your recently created demo websites
+                Your recently created websites
               </p>
             </div>
             <div className="border-t border-gray-200">
               {demos.length === 0 ? (
                 <div className="px-4 py-5 sm:px-6 text-center text-gray-500">
-                  No demos created yet. <Link href="/app/create" className="text-primary-600 hover:text-primary-500">Create your first demo</Link>
+                  No websites created yet. <Link href="/app/create" className="text-primary-600 hover:text-primary-500">Create your first website</Link>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -142,7 +202,7 @@ export default function AppDashboard() {
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Demo ID
+                          Website ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Business
@@ -186,12 +246,21 @@ export default function AppDashboard() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-primary-600 hover:text-primary-900"
+                                title="View Website"
                               >
                                 <ExternalLink className="h-4 w-4" />
                               </a>
                               <button
+                                onClick={() => downloadWebsite(demo)}
+                                className="text-green-600 hover:text-green-900"
+                                title="Download Website Files"
+                              >
+                                <Download className="h-4 w-4" />
+                              </button>
+                              <button
                                 onClick={() => deleteDemo(demo.id)}
                                 className="text-red-600 hover:text-red-900"
+                                title="Delete Website"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -214,8 +283,8 @@ export default function AppDashboard() {
             >
               <div className="text-center">
                 <Plus className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Create New Demo</h3>
-                <p className="text-gray-600">Start building a demo website for your prospect</p>
+                <h3 className="text-lg font-semibold mb-2">Create New Website</h3>
+                <p className="text-gray-600">Start building a website for your prospect</p>
               </div>
             </Link>
 

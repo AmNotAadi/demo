@@ -129,7 +129,7 @@ export default function GymTemplate({ demo }: GymTemplateProps) {
           <h3 className="text-2xl font-bold mb-4">{demo.businessName}</h3>
           <p className="text-gray-400 mb-6">Transform your body, transform your life</p>
           <div className="text-sm text-gray-500">
-            Demo Website By Regrowth
+            Website By Regrowth
           </div>
         </div>
       </footer>

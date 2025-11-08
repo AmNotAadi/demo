@@ -1,23 +1,46 @@
 import { generateColorPalette, getContrastColor } from '../../lib/colorUtils'
+import Image from 'next/image'
 import { TemplateData, TemplateProps } from './GymTemplate'
 
 // Cafe Template - Cozy Grid Layout
 export function CafeTemplate({ data }: TemplateProps) {
   const colors = generateColorPalette(data.primaryColor)
+  const accentColors = generateColorPalette(data.accentColor || data.primaryColor)
   const textColor = getContrastColor(data.primaryColor)
+  const titleFontFamily = (() => {
+    switch ((data.titleFont || 'sans').toLowerCase()) {
+      case 'serif':
+        return 'Georgia, Cambria, "Times New Roman", Times, serif'
+      case 'mono':
+        return 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+      case 'rounded':
+        return 'system-ui, ui-rounded, "Segoe UI Rounded", "SF Pro Rounded", "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif'
+      case 'display':
+        return 'Impact, Haettenschweiler, "Franklin Gothic Bold", "Oswald", "Anton", Arial, sans-serif'
+      case 'sans':
+      default:
+        return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    }
+  })()
+  
+  const bgColor = data.backgroundColor || '#fffbf0'
+  const bgOpacity = (data.backgroundOpacity ?? 100) / 100
+  const backgroundStyle = {
+    backgroundColor: `${bgColor}${Math.round(bgOpacity * 255).toString(16).padStart(2, '0')}`
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen" style={backgroundStyle}>
       {/* Cozy Header */}
       <header className="relative bg-white/80 backdrop-blur-md shadow-lg border-b border-amber-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               {data.logoUrl && (
-                <img src={data.logoUrl} alt="Logo" className="h-16 w-auto transition-transform duration-300 hover:scale-110" />
+                <Image src={data.logoUrl} alt="Logo" height={64} width={64} unoptimized className="h-16 w-auto transition-transform duration-300 hover:scale-110" />
               )}
               <div>
-                <h1 className="text-4xl font-bold font-serif" style={{ color: colors.primary }}>
+                <h1 className="text-4xl font-bold font-serif" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
                   {data.businessName}
                 </h1>
                 <p className="text-amber-600 italic text-lg animate-fade-in-up animation-delay-200">
@@ -29,25 +52,25 @@ export function CafeTemplate({ data }: TemplateProps) {
             <nav className="hidden md:flex space-x-8">
               <a href="#home" className="text-gray-700 hover:text-amber-600 font-semibold transition-colors duration-300 relative group">
                 Home
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: colors.primary }}></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: accentColors.primary }}></span>
               </a>
               <a href="#menu" className="text-gray-700 hover:text-amber-600 font-semibold transition-colors duration-300 relative group">
                 Menu
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: colors.primary }}></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: accentColors.primary }}></span>
               </a>
               <a href="#about" className="text-gray-700 hover:text-amber-600 font-semibold transition-colors duration-300 relative group">
                 About
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: colors.primary }}></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: accentColors.primary }}></span>
               </a>
               <a href="#contact" className="text-gray-700 hover:text-amber-600 font-semibold transition-colors duration-300 relative group">
                 Contact
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: colors.primary }}></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: accentColors.primary }}></span>
               </a>
             </nav>
             
             <button 
               className="px-8 py-3 rounded-full font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden group"
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: accentColors.primary }}
               onClick={() => alert('Ordering online...')}
             >
               <span className="relative z-10">Order Online</span>
@@ -63,7 +86,7 @@ export function CafeTemplate({ data }: TemplateProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in-up">
               <div className="space-y-6">
-                <h1 className="text-6xl md:text-7xl font-bold font-serif leading-tight" style={{ color: colors.primary }}>
+                <h1 className="text-6xl md:text-7xl font-bold font-serif leading-tight" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
                   Welcome to {data.businessName}
                 </h1>
                 <p className="text-2xl text-gray-700 leading-relaxed">
@@ -78,15 +101,15 @@ export function CafeTemplate({ data }: TemplateProps) {
               {/* Cafe Stats */}
               <div className="grid grid-cols-3 gap-8 animate-fade-in-up animation-delay-400">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>1000+</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>1000+</div>
                   <div className="text-gray-600 text-sm">Happy Customers</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>50+</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>50+</div>
                   <div className="text-gray-600 text-sm">Coffee Varieties</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>5★</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>5★</div>
                   <div className="text-gray-600 text-sm">Customer Rating</div>
                 </div>
               </div>
@@ -103,19 +126,35 @@ export function CafeTemplate({ data }: TemplateProps) {
                   <span className="relative z-10">View Menu</span>
                   <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                 </button>
-                <button className="px-10 py-5 text-xl font-bold border-2 border-gray-300 text-gray-700 hover:bg-gray-100 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+                <button 
+                  className="px-10 py-5 text-xl font-bold border-2 text-white rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
+                  style={{ 
+                    backgroundColor: accentColors.primary,
+                    borderColor: accentColors.primary
+                  }}
+                >
                   Visit Us
                 </button>
               </div>
             </div>
             
             <div className="relative animate-fade-in-up animation-delay-800">
-              <div 
-                className="h-[600px] bg-gradient-to-br from-amber-200 to-orange-300 rounded-3xl flex items-center justify-center text-gray-600 text-xl shadow-2xl"
-                style={{ backgroundColor: colors.primaryLightest }}
-              >
-                Cozy Cafe Interior
-              </div>
+              {data.heroImageUrl ? (
+                <div className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl">
+                  <Image src={data.heroImageUrl} alt="Hero" fill unoptimized className="object-cover" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold"> 
+                    {data.tagline || 'Cozy Cafe Interior'}
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  className="h-[600px] bg-gradient-to-br from-amber-200 to-orange-300 rounded-3xl flex items-center justify-center text-gray-600 text-xl shadow-2xl"
+                  style={{ backgroundColor: colors.primaryLightest }}
+                >
+                  Cozy Cafe Interior
+                </div>
+              )}
               
               {/* Floating Elements */}
               <div 
@@ -126,7 +165,7 @@ export function CafeTemplate({ data }: TemplateProps) {
               </div>
               <div 
                 className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-xl animate-pulse"
-                style={{ backgroundColor: colors.primaryDark }}
+                style={{ backgroundColor: accentColors.primary }}
               >
                 Fresh Daily
               </div>
@@ -134,7 +173,7 @@ export function CafeTemplate({ data }: TemplateProps) {
               {/* Premium Badge */}
               <div 
                 className="absolute top-8 left-8 px-6 py-3 rounded-full text-white font-bold text-sm shadow-lg"
-                style={{ backgroundColor: colors.primaryDark }}
+                style={{ backgroundColor: accentColors.primaryDark }}
               >
                 🏆 Award Winning
               </div>
@@ -143,12 +182,12 @@ export function CafeTemplate({ data }: TemplateProps) {
         </div>
       </section>
 
-      {/* Menu Section - Grid Layout */}
+      {/* Menu Section - Simplified */}
       <section id="menu" className="py-20 px-4 bg-white/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-5xl font-bold mb-6 font-serif" style={{ color: colors.primary }}>
-              Our Menu
+              Our Offerings
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Handcrafted beverages and fresh pastries made with love
@@ -158,55 +197,32 @@ export function CafeTemplate({ data }: TemplateProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { 
-                category: 'Coffee',
-                items: [
-                  { name: 'Espresso', price: '$3.50', description: 'Rich and bold, our signature blend' },
-                  { name: 'Cappuccino', price: '$4.25', description: 'Perfect balance of espresso, steamed milk, and foam' },
-                  { name: 'Latte', price: '$4.75', description: 'Smooth espresso with creamy steamed milk' },
-                  { name: 'Americano', price: '$3.75', description: 'Classic espresso with hot water' }
-                ]
+                category: 'Coffee & Espresso',
+                icon: '☕',
+                description: 'Premium coffee drinks made with expertly roasted beans'
               },
               { 
                 category: 'Specialty Drinks',
-                items: [
-                  { name: 'Caramel Macchiato', price: '$5.25', description: 'Vanilla syrup, steamed milk, espresso, caramel drizzle' },
-                  { name: 'Mocha', price: '$5.00', description: 'Rich chocolate with espresso and steamed milk' },
-                  { name: 'Cold Brew', price: '$4.50', description: 'Smooth, refreshing cold-brewed coffee' },
-                  { name: 'Frappé', price: '$5.75', description: 'Blended ice coffee with whipped cream' }
-                ]
+                icon: '🥤',
+                description: 'Unique creations and seasonal favorites'
               },
               { 
-                category: 'Pastries & Snacks',
-                items: [
-                  { name: 'Croissant', price: '$3.25', description: 'Buttery, flaky French pastry' },
-                  { name: 'Muffin', price: '$2.75', description: 'Fresh baked daily, various flavors' },
-                  { name: 'Bagel', price: '$2.50', description: 'Fresh bagels with cream cheese' },
-                  { name: 'Sandwich', price: '$7.50', description: 'Fresh ingredients on artisan bread' }
-                ]
+                category: 'Fresh Pastries',
+                icon: '🥐',
+                description: 'Baked daily with the finest ingredients'
               }
             ].map((category, categoryIndex) => (
               <div key={categoryIndex} className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-scale-in group" style={{ animationDelay: `${categoryIndex * 0.2}s` }}>
                 <div 
-                  className="h-20 flex items-center justify-center text-white font-bold text-xl relative overflow-hidden"
+                  className="h-48 flex flex-col items-center justify-center text-white font-bold text-xl relative overflow-hidden"
                   style={{ backgroundColor: colors.primary }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-                  <span className="relative z-10">{category.category}</span>
+                  <span className="relative z-10 text-6xl mb-4">{category.icon}</span>
+                  <span className="relative z-10 text-2xl">{category.category}</span>
                 </div>
                 <div className="p-8">
-                  {category.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="mb-6 last:mb-0">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-semibold" style={{ color: colors.primaryDarkest }}>
-                          {item.name}
-                        </h3>
-                        <span className="text-lg font-bold" style={{ color: colors.primary }}>
-                          {item.price}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
-                    </div>
-                  ))}
+                  <p className="text-gray-600 text-lg leading-relaxed text-center">{category.description}</p>
                 </div>
               </div>
             ))}
@@ -223,32 +239,32 @@ export function CafeTemplate({ data }: TemplateProps) {
                 Our Story
               </h2>
               <p className="text-xl text-gray-700 mb-6 leading-relaxed">
-                Founded in 2018, {data.businessName} began as a dream to create a community space where 
-                people could gather, work, and enjoy exceptional coffee. We source our beans directly 
-                from sustainable farms and roast them in-house to ensure the freshest, most flavorful cup.
+                {data.businessName} is more than just a cafe—it's a community space where 
+                people gather, work, and enjoy exceptional coffee. We're passionate about 
+                quality and creating a welcoming atmosphere for everyone.
               </p>
               <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                Our baristas are trained in the art of coffee making, and we're passionate about 
-                creating the perfect cup for every customer. From our signature blends to our 
-                seasonal specials, every drink is crafted with care and attention to detail.
+                Every cup is crafted with care and attention to detail, using premium 
+                ingredients and time-tested techniques. Come experience the difference 
+                that passion and dedication make.
               </p>
               
               <div className="grid grid-cols-2 gap-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>6+</div>
-                  <div className="text-gray-600">Years Experience</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>Premium</div>
+                  <div className="text-gray-600">Quality Beans</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>100%</div>
-                  <div className="text-gray-600">Organic Beans</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>Fresh</div>
+                  <div className="text-gray-600">Daily Baked</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>24/7</div>
-                  <div className="text-gray-600">Fresh Roasting</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>Cozy</div>
+                  <div className="text-gray-600">Atmosphere</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>5★</div>
-                  <div className="text-gray-600">Customer Rating</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>5★</div>
+                  <div className="text-gray-600">Rated</div>
                 </div>
               </div>
             </div>
@@ -420,7 +436,7 @@ export function CafeTemplate({ data }: TemplateProps) {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 {data.businessName}. Demo Website by Regrowth.</p>
+            <p>© 2024 {data.businessName}. Website by Regrowth.</p>
           </div>
         </div>
       </footer>

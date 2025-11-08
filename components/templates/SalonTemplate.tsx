@@ -1,23 +1,46 @@
 import { generateColorPalette, getContrastColor } from '../../lib/colorUtils'
+import Image from 'next/image'
 import { TemplateData, TemplateProps } from './GymTemplate'
 
 // Salon Template - Spa-Inspired Layout
 export function SalonTemplate({ data }: TemplateProps) {
   const colors = generateColorPalette(data.primaryColor)
+  const accentColors = generateColorPalette(data.accentColor || data.primaryColor)
   const textColor = getContrastColor(data.primaryColor)
+  const titleFontFamily = (() => {
+    switch ((data.titleFont || 'sans').toLowerCase()) {
+      case 'serif':
+        return 'Georgia, Cambria, "Times New Roman", Times, serif'
+      case 'mono':
+        return 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+      case 'rounded':
+        return 'system-ui, ui-rounded, "Segoe UI Rounded", "SF Pro Rounded", "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif'
+      case 'display':
+        return 'Impact, Haettenschweiler, "Franklin Gothic Bold", "Oswald", "Anton", Arial, sans-serif'
+      case 'sans':
+      default:
+        return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    }
+  })()
+  
+  const bgColor = data.backgroundColor || '#fdf2f8'
+  const bgOpacity = (data.backgroundOpacity ?? 100) / 100
+  const backgroundStyle = {
+    backgroundColor: `${bgColor}${Math.round(bgOpacity * 255).toString(16).padStart(2, '0')}`
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
+    <div className="min-h-screen" style={backgroundStyle}>
       {/* Elegant Header */}
       <header className="relative bg-white/90 backdrop-blur-md shadow-lg border-b border-pink-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               {data.logoUrl && (
-                <img src={data.logoUrl} alt="Logo" className="h-16 w-auto transition-transform duration-300 hover:scale-110" />
+                <Image src={data.logoUrl} alt="Logo" height={64} width={64} unoptimized className="h-16 w-auto transition-transform duration-300 hover:scale-110" />
               )}
               <div>
-                <h1 className="text-4xl font-bold font-serif" style={{ color: colors.primary }}>
+                <h1 className="text-4xl font-bold font-serif" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
                   {data.businessName}
                 </h1>
                 <p className="text-pink-600 italic text-lg animate-fade-in-up animation-delay-200">
@@ -47,7 +70,7 @@ export function SalonTemplate({ data }: TemplateProps) {
             
             <button 
               className="px-8 py-3 rounded-full font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden group"
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: accentColors.primary }}
               onClick={() => alert('Booking appointment...')}
             >
               <span className="relative z-10">Book Now</span>
@@ -63,7 +86,7 @@ export function SalonTemplate({ data }: TemplateProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in-up">
               <div className="space-y-6">
-                <h1 className="text-6xl md:text-7xl font-bold font-serif leading-tight" style={{ color: colors.primary }}>
+                <h1 className="text-6xl md:text-7xl font-bold font-serif leading-tight" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
                   {data.businessName}
                 </h1>
                 <p className="text-2xl text-gray-700 leading-relaxed">
@@ -79,15 +102,15 @@ export function SalonTemplate({ data }: TemplateProps) {
               {/* Salon Stats */}
               <div className="grid grid-cols-3 gap-8 animate-fade-in-up animation-delay-400">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>500+</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>500+</div>
                   <div className="text-gray-600 text-sm">Happy Clients</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>10+</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>10+</div>
                   <div className="text-gray-600 text-sm">Expert Stylists</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>5★</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>5★</div>
                   <div className="text-gray-600 text-sm">Customer Rating</div>
                 </div>
               </div>
@@ -104,19 +127,35 @@ export function SalonTemplate({ data }: TemplateProps) {
                   <span className="relative z-10">View Services</span>
                   <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                 </button>
-                <button className="px-10 py-5 text-xl font-bold border-2 border-gray-300 text-gray-700 hover:bg-gray-100 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+                <button 
+                  className="px-10 py-5 text-xl font-bold border-2 text-white rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
+                  style={{ 
+                    backgroundColor: accentColors.primary,
+                    borderColor: accentColors.primary
+                  }}
+                >
                   Virtual Consultation
                 </button>
               </div>
             </div>
             
             <div className="relative animate-fade-in-up animation-delay-800">
-              <div 
-                className="h-[600px] bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl flex items-center justify-center text-gray-600 text-xl shadow-2xl"
-                style={{ backgroundColor: colors.primaryLightest }}
-              >
-                Luxury Salon Interior
-              </div>
+              {data.heroImageUrl ? (
+                <div className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl">
+                  <Image src={data.heroImageUrl} alt="Hero" fill unoptimized className="object-cover" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold"> 
+                    {data.tagline || 'Luxury Salon Interior'}
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  className="h-[600px] bg-gradient-to-br from-pink-200 to-purple-300 rounded-3xl flex items-center justify-center text-gray-600 text-xl shadow-2xl"
+                  style={{ backgroundColor: colors.primaryLightest }}
+                >
+                  Luxury Salon Interior
+                </div>
+              )}
               
               {/* Floating Elements */}
               <div 
@@ -160,50 +199,32 @@ export function SalonTemplate({ data }: TemplateProps) {
             {[
               { 
                 name: 'Hair Styling & Color',
-                price: 'From $80',
                 description: 'Expert cuts, colors, and styling for any occasion',
-                features: ['Cut & Style', 'Color & Highlights', 'Blowouts', 'Special Occasions'],
-                duration: '1-3 hours',
                 image: '💇‍♀️'
               },
               { 
                 name: 'Facials & Skincare',
-                price: 'From $120',
                 description: 'Rejuvenating treatments for healthy, glowing skin',
-                features: ['Deep Cleansing', 'Anti-Aging', 'Hydrating', 'Acne Treatment'],
-                duration: '60-90 min',
                 image: '🧴'
               },
               { 
                 name: 'Manicure & Pedicure',
-                price: 'From $45',
                 description: 'Professional nail care and beautiful finishes',
-                features: ['Classic Manicure', 'Gel Polish', 'Nail Art', 'Spa Pedicure'],
-                duration: '45-75 min',
                 image: '💅'
               },
               { 
                 name: 'Massage Therapy',
-                price: 'From $100',
                 description: 'Relaxing and therapeutic massage treatments',
-                features: ['Swedish Massage', 'Deep Tissue', 'Hot Stone', 'Aromatherapy'],
-                duration: '60-90 min',
                 image: '💆‍♀️'
               },
               { 
                 name: 'Bridal Packages',
-                price: 'From $300',
                 description: 'Complete beauty packages for your special day',
-                features: ['Hair & Makeup', 'Trial Sessions', 'Day-of Service', 'Touch-ups'],
-                duration: '3-5 hours',
                 image: '👰'
               },
               { 
                 name: 'Eyebrow & Lash',
-                price: 'From $35',
                 description: 'Perfect brows and luscious lashes',
-                features: ['Eyebrow Shaping', 'Lash Extensions', 'Tinting', 'Laminating'],
-                duration: '30-60 min',
                 image: '👁️'
               }
             ].map((service, index) => (
@@ -214,36 +235,21 @@ export function SalonTemplate({ data }: TemplateProps) {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                   <span className="relative z-10">{service.image}</span>
-                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
-                    {service.price}
-                  </div>
-                  <div className="absolute bottom-4 left-4 px-3 py-1 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
-                    {service.duration}
-                  </div>
                 </div>
                 <div className="p-8">
                   <h3 className="text-2xl font-bold mb-3" style={{ color: colors.primaryDarkest }}>
                     {service.name}
                   </h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
+                  <p className="text-gray-600 mb-6 text-lg leading-relaxed">
                     {service.description}
                   </p>
                   
-                  <div className="space-y-2 mb-6">
-                    {service.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center">
-                        <span className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: colors.primary }}></span>
-                        <span className="text-gray-600 text-sm">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
                   <button 
-                    className="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl relative overflow-hidden group"
+                    className="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 shadow-lg relative overflow-hidden group"
                     style={{ backgroundColor: colors.primary }}
-                    onClick={() => alert(`Booking ${service.name}...`)}
+                    onClick={() => alert(`Learn more about ${service.name}`)}
                   >
-                    <span className="relative z-10">Book Service</span>
+                    <span className="relative z-10">Learn More</span>
                     <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                   </button>
                 </div>
@@ -510,7 +516,7 @@ export function SalonTemplate({ data }: TemplateProps) {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 {data.businessName}. Demo Website by Regrowth.</p>
+            <p>© 2024 {data.businessName}. Website by Regrowth.</p>
           </div>
         </div>
       </footer>

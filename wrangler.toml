@@ -1,4 +1,10 @@
 name = "regrowth-demo-builder"
-compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+
+[build.upload]
+format = "modules"
 

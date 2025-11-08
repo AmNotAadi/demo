@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading] = useState(false)
 
   const signIn = async (email: string, password: string) => {
-    alert('Authentication is disabled in demo mode')
+    alert('Authentication is disabled in preview mode')
     throw new Error('Authentication is disabled')
   }
 

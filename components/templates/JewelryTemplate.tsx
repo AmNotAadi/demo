@@ -1,23 +1,46 @@
 import { generateColorPalette, getContrastColor } from '../../lib/colorUtils'
+import Image from 'next/image'
 import { TemplateData, TemplateProps } from './GymTemplate'
 
 // Jewelry Template - Luxury Showcase Layout
 export function JewelryTemplate({ data }: TemplateProps) {
   const colors = generateColorPalette(data.primaryColor)
+  const accentColors = generateColorPalette(data.accentColor || data.primaryColor)
   const textColor = getContrastColor(data.primaryColor)
+  const titleFontFamily = (() => {
+    switch ((data.titleFont || 'sans').toLowerCase()) {
+      case 'serif':
+        return 'Georgia, Cambria, "Times New Roman", Times, serif'
+      case 'mono':
+        return 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+      case 'rounded':
+        return 'system-ui, ui-rounded, "Segoe UI Rounded", "SF Pro Rounded", "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif'
+      case 'display':
+        return 'Impact, Haettenschweiler, "Franklin Gothic Bold", "Oswald", "Anton", Arial, sans-serif'
+      case 'sans':
+      default:
+        return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    }
+  })()
+  
+  const bgColor = data.backgroundColor || '#f8fafc'
+  const bgOpacity = (data.backgroundOpacity ?? 100) / 100
+  const backgroundStyle = {
+    backgroundColor: `${bgColor}${Math.round(bgOpacity * 255).toString(16).padStart(2, '0')}`
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen" style={backgroundStyle}>
       {/* Luxury Header */}
       <header className="relative bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               {data.logoUrl && (
-                <img src={data.logoUrl} alt="Logo" className="h-16 w-auto transition-transform duration-300 hover:scale-110" />
+                <Image src={data.logoUrl} alt="Logo" height={64} width={64} unoptimized className="h-16 w-auto transition-transform duration-300 hover:scale-110" />
               )}
               <div>
-                <h1 className="text-4xl font-bold font-serif tracking-wide" style={{ color: colors.primary }}>
+                <h1 className="text-4xl font-bold font-serif tracking-wide" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
                   {data.businessName}
                 </h1>
                 <p className="text-gray-600 italic text-lg animate-fade-in-up animation-delay-200">
@@ -47,7 +70,7 @@ export function JewelryTemplate({ data }: TemplateProps) {
             
             <button 
               className="px-8 py-3 rounded-full font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden group"
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: accentColors.primary }}
               onClick={() => alert('Scheduling appointment...')}
             >
               <span className="relative z-10">Book Appointment</span>
@@ -63,7 +86,7 @@ export function JewelryTemplate({ data }: TemplateProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in-up">
               <div className="space-y-6">
-                <h1 className="text-6xl md:text-7xl font-bold font-serif leading-tight" style={{ color: colors.primary }}>
+                <h1 className="text-6xl md:text-7xl font-bold font-serif leading-tight" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
                   {data.businessName}
                 </h1>
                 <p className="text-2xl text-gray-700 leading-relaxed">
@@ -79,15 +102,15 @@ export function JewelryTemplate({ data }: TemplateProps) {
               {/* Luxury Stats */}
               <div className="grid grid-cols-3 gap-8 animate-fade-in-up animation-delay-400">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>30+</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>30+</div>
                   <div className="text-gray-600 text-sm">Years Experience</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>1000+</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>1000+</div>
                   <div className="text-gray-600 text-sm">Happy Clients</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2" style={{ color: colors.primary }}>5★</div>
+                  <div className="text-4xl font-bold mb-2" style={{ color: accentColors.primary }}>5★</div>
                   <div className="text-gray-600 text-sm">Customer Rating</div>
                 </div>
               </div>
@@ -104,19 +127,35 @@ export function JewelryTemplate({ data }: TemplateProps) {
                   <span className="relative z-10">View Collections</span>
                   <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                 </button>
-                <button className="px-10 py-5 text-xl font-bold border-2 border-gray-300 text-gray-700 hover:bg-gray-100 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+                <button 
+                  className="px-10 py-5 text-xl font-bold border-2 text-white rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
+                  style={{ 
+                    backgroundColor: accentColors.primary,
+                    borderColor: accentColors.primary
+                  }}
+                >
                   Custom Design
                 </button>
               </div>
             </div>
             
             <div className="relative animate-fade-in-up animation-delay-800">
-              <div 
-                className="h-[600px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center text-gray-600 text-xl shadow-2xl"
-                style={{ backgroundColor: colors.primaryLightest }}
-              >
-                Luxury Jewelry Display
-              </div>
+              {data.heroImageUrl ? (
+                <div className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl">
+                  <Image src={data.heroImageUrl} alt="Hero" fill unoptimized className="object-cover" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold"> 
+                    {data.tagline || 'Luxury Jewelry Display'}
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  className="h-[600px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center text-gray-600 text-xl shadow-2xl"
+                  style={{ backgroundColor: colors.primaryLightest }}
+                >
+                  Luxury Jewelry Display
+                </div>
+              )}
               
               {/* Floating Elements */}
               <div 
@@ -160,44 +199,32 @@ export function JewelryTemplate({ data }: TemplateProps) {
             {[
               { 
                 name: 'Engagement Rings',
-                price: 'From $2,500',
                 description: 'Symbols of eternal love, crafted with the finest diamonds',
-                features: ['Certified Diamonds', 'Custom Settings', 'Lifetime Warranty'],
                 image: '💍'
               },
               { 
                 name: 'Wedding Bands',
-                price: 'From $800',
                 description: 'Timeless bands for your special day',
-                features: ['Gold & Platinum', 'Custom Engraving', 'Perfect Fit Guarantee'],
                 image: '💒'
               },
               { 
                 name: 'Necklaces',
-                price: 'From $1,200',
                 description: 'Elegant pieces to complement any outfit',
-                features: ['Pearl & Diamond', 'Chain Options', 'Length Adjustments'],
                 image: '📿'
               },
               { 
                 name: 'Earrings',
-                price: 'From $600',
                 description: 'Sparkling accents for every occasion',
-                features: ['Stud & Drop Styles', 'Hypoallergenic', 'Secure Clasps'],
                 image: '👂'
               },
               { 
                 name: 'Bracelets',
-                price: 'From $900',
                 description: 'Sophisticated wrist adornments',
-                features: ['Adjustable Sizing', 'Precious Metals', 'Delicate Chains'],
-                image: '📿'
+                image: '�'
               },
               { 
                 name: 'Custom Design',
-                price: 'Consultation',
                 description: 'Create your perfect piece from scratch',
-                features: ['Personal Consultation', '3D Rendering', 'Unlimited Revisions'],
                 image: '🎨'
               }
             ].map((item, index) => (
@@ -208,33 +235,21 @@ export function JewelryTemplate({ data }: TemplateProps) {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                   <span className="relative z-10">{item.image}</span>
-                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
-                    {item.price}
-                  </div>
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold mb-3" style={{ color: colors.primaryDarkest }}>
+                  <h3 className="text-2xl font-bold mb-4" style={{ color: colors.primaryDarkest }}>
                     {item.name}
                   </h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
+                  <p className="text-gray-600 mb-6 text-lg leading-relaxed">
                     {item.description}
                   </p>
-                  
-                  <div className="space-y-2 mb-6">
-                    {item.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center">
-                        <span className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: colors.primary }}></span>
-                        <span className="text-gray-600 text-sm">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
                   
                   <button 
                     className="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl relative overflow-hidden group"
                     style={{ backgroundColor: colors.primary }}
-                    onClick={() => alert(`Viewing ${item.name} collection...`)}
+                    onClick={() => alert(`Learn more about ${item.name}`)}
                   >
-                    <span className="relative z-10">View Collection</span>
+                    <span className="relative z-10">Learn More</span>
                     <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                   </button>
                 </div>
@@ -465,7 +480,7 @@ export function JewelryTemplate({ data }: TemplateProps) {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 {data.businessName}. Demo Website by Regrowth.</p>
+            <p>© 2024 {data.businessName}. Website by Regrowth.</p>
           </div>
         </div>
       </footer>

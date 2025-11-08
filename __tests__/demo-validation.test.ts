@@ -46,7 +46,8 @@ describe('Demo Creation Validation', () => {
     const invalidTypes = ['invalid', '', null, undefined]
     
     invalidTypes.forEach(type => {
-      expect(type).not.toMatch(/^(gym|restaurant|cafe|jewelry|salon)$/)
+      // Coerce to string to avoid calling .match on null/undefined
+      expect(String(type)).not.toMatch(/^(gym|restaurant|cafe|jewelry|salon)$/)
     })
   })
 
@@ -73,7 +74,8 @@ describe('Demo Creation Validation', () => {
     })
 
     invalidPages.forEach(pages => {
-      expect(pages < 1 || pages > 6).toBeTruthy()
+      // Consider non-number values invalid as well
+      expect(typeof pages !== 'number' || pages < 1 || pages > 6).toBeTruthy()
     })
   })
 })

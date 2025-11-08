@@ -1,20 +1,43 @@
 import { generateColorPalette, getContrastColor } from '../../lib/colorUtils'
+import Image from 'next/image'
 import { TemplateData, TemplateProps } from './GymTemplate'
 
 // Restaurant Template - Premium Elegant Layout
 export function RestaurantTemplate({ data }: TemplateProps) {
   const colors = generateColorPalette(data.primaryColor)
+  const accentColors = generateColorPalette(data.accentColor || data.primaryColor)
   const textColor = getContrastColor(data.primaryColor)
+  const titleFontFamily = (() => {
+    switch ((data.titleFont || 'sans').toLowerCase()) {
+      case 'serif':
+        return 'Georgia, Cambria, "Times New Roman", Times, serif'
+      case 'mono':
+        return 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+      case 'rounded':
+        return 'system-ui, ui-rounded, "Segoe UI Rounded", "SF Pro Rounded", "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif'
+      case 'display':
+        return 'Impact, Haettenschweiler, "Franklin Gothic Bold", "Oswald", "Anton", Arial, sans-serif'
+      case 'sans':
+      default:
+        return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    }
+  })()
+  
+  const bgColor = data.backgroundColor || '#ffffff'
+  const bgOpacity = (data.backgroundOpacity ?? 100) / 100
+  const backgroundStyle = {
+    backgroundColor: `${bgColor}${Math.round(bgOpacity * 255).toString(16).padStart(2, '0')}`
+  }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={backgroundStyle}>
       {/* Premium Fixed Sidebar Navigation */}
       <aside className="fixed left-0 top-0 h-full w-80 bg-gradient-to-b from-gray-900 to-gray-800 text-white z-50 overflow-y-auto shadow-2xl">
         <div className="p-8">
-          {data.logoUrl && (
-            <img src={data.logoUrl} alt="Logo" className="h-20 w-auto mb-8 transition-transform duration-300 hover:scale-105" />
-          )}
-          <h1 className="text-4xl font-bold mb-4 font-serif animate-fade-in-up" style={{ color: colors.primary }}>
+            {data.logoUrl && (
+            <Image src={data.logoUrl} alt="Logo" height={80} width={80} unoptimized className="h-20 w-auto mb-8 transition-transform duration-300 hover:scale-105" />
+            )}
+          <h1 className="text-4xl font-bold mb-4 font-serif animate-fade-in-up" style={{ color: colors.primary, fontFamily: titleFontFamily }}>
             {data.businessName}
           </h1>
           <p className="text-gray-300 mb-8 italic text-lg animate-fade-in-up animation-delay-200">
@@ -69,7 +92,7 @@ export function RestaurantTemplate({ data }: TemplateProps) {
           <div className="mt-8 animate-fade-in-up animation-delay-800">
             <button 
               className="w-full py-4 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl relative overflow-hidden group"
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: accentColors.primary }}
               onClick={() => alert('Opening reservation system...')}
             >
               <span className="relative z-10">Make Reservation</span>
@@ -111,12 +134,19 @@ export function RestaurantTemplate({ data }: TemplateProps) {
       <main className="ml-80">
         {/* Premium Hero Section - Full Width */}
         <section id="home" className="relative h-screen overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black"
-            style={{ backgroundColor: colors.primaryDarkest }}
-          >
-            <div className="absolute inset-0 bg-black/40"></div>
-          </div>
+          {data.heroImageUrl ? (
+            <>
+              <Image src={data.heroImageUrl} alt="Hero" fill unoptimized className="object-cover" />
+              <div className="absolute inset-0 bg-black/40"></div>
+            </>
+          ) : (
+            <div 
+              className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black"
+              style={{ backgroundColor: colors.primaryDarkest }}
+            >
+              <div className="absolute inset-0 bg-black/40"></div>
+            </div>
+          )}
           
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
@@ -128,7 +158,7 @@ export function RestaurantTemplate({ data }: TemplateProps) {
           <div className="relative z-10 h-full flex items-center justify-center text-center text-white px-8">
             <div className="max-w-5xl">
               <div className="space-y-8">
-                <h1 className="text-7xl md:text-9xl font-bold mb-8 font-serif animate-fade-in-up leading-tight">
+                <h1 className="text-7xl md:text-9xl font-bold mb-8 font-serif animate-fade-in-up leading-tight" style={{ fontFamily: titleFontFamily }}>
                   {data.businessName}
                 </h1>
                 <p className="text-3xl md:text-4xl mb-12 font-light italic max-w-4xl mx-auto animate-fade-in-up animation-delay-200 leading-relaxed">
@@ -138,15 +168,15 @@ export function RestaurantTemplate({ data }: TemplateProps) {
                 {/* Premium Stats */}
                 <div className="grid grid-cols-3 gap-12 mb-12 animate-fade-in-up animation-delay-400">
                   <div className="text-center">
-                    <div className="text-5xl font-bold mb-2" style={{ color: colors.primary }}>15+</div>
+                    <div className="text-5xl font-bold mb-2" style={{ color: accentColors.primary }}>15+</div>
                     <div className="text-gray-300 text-lg">Years Experience</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold mb-2" style={{ color: colors.primary }}>⭐</div>
+                    <div className="text-5xl font-bold mb-2" style={{ color: accentColors.primary }}>⭐</div>
                     <div className="text-gray-300 text-lg">Michelin Star</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold mb-2" style={{ color: colors.primary }}>500+</div>
+                    <div className="text-5xl font-bold mb-2" style={{ color: accentColors.primary }}>500+</div>
                     <div className="text-gray-300 text-lg">Happy Guests</div>
                   </div>
                 </div>
@@ -163,7 +193,13 @@ export function RestaurantTemplate({ data }: TemplateProps) {
                     <span className="relative z-10">View Menu</span>
                     <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                   </button>
-                  <button className="px-16 py-6 text-2xl font-bold border-2 border-white text-white hover:bg-white hover:text-gray-900 rounded-full transition-all duration-300 hover:scale-105 shadow-xl">
+                  <button 
+                    className="px-16 py-6 text-2xl font-bold border-2 text-white rounded-full transition-all duration-300 hover:scale-105 shadow-xl"
+                    style={{ 
+                      backgroundColor: accentColors.primary,
+                      borderColor: accentColors.primary
+                    }}
+                  >
                     Reserve Table
                   </button>
                 </div>
@@ -180,66 +216,46 @@ export function RestaurantTemplate({ data }: TemplateProps) {
           </div>
         </section>
 
-        {/* Menu Section - Masonry Layout */}
+        {/* Menu Section - Simplified */}
         <section id="menu" className="py-20 px-8">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-5xl font-bold mb-6 font-serif" style={{ color: colors.primary }}>
-                Our Menu
+                Our Cuisine
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Handcrafted dishes featuring locally sourced ingredients
+                Expertly crafted dishes featuring the finest ingredients
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { 
                   category: 'Appetizers',
-                  items: [
-                    { name: 'Truffle Arancini', price: '$18', description: 'Crispy risotto balls with truffle oil and parmesan' },
-                    { name: 'Burrata Caprese', price: '$16', description: 'Fresh burrata with heirloom tomatoes and basil' },
-                    { name: 'Lobster Bisque', price: '$22', description: 'Rich and creamy soup with fresh herbs' }
-                  ]
+                  icon: '🍽️',
+                  description: 'Start your meal with carefully curated starters'
                 },
                 { 
                   category: 'Main Courses',
-                  items: [
-                    { name: 'Wagyu Beef Tenderloin', price: '$65', description: 'Premium cut with roasted vegetables and red wine reduction' },
-                    { name: 'Pan-Seared Halibut', price: '$38', description: 'Fresh halibut with lemon butter sauce and seasonal vegetables' },
-                    { name: 'Duck Confit', price: '$42', description: 'Slow-cooked duck leg with cherry gastrique' }
-                  ]
+                  icon: '👨‍🍳',
+                  description: 'Signature dishes prepared with precision and care'
                 },
                 { 
                   category: 'Desserts',
-                  items: [
-                    { name: 'Chocolate Soufflé', price: '$16', description: 'Warm chocolate dessert with vanilla ice cream' },
-                    { name: 'Tiramisu', price: '$14', description: 'Classic Italian dessert with espresso and mascarpone' },
-                    { name: 'Crème Brûlée', price: '$12', description: 'Vanilla custard with caramelized sugar' }
-                  ]
+                  icon: '🍰',
+                  description: 'Indulgent sweets to complete your experience'
                 }
               ].map((category, categoryIndex) => (
-                <div key={categoryIndex} className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div key={categoryIndex} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
                   <div 
-                    className="h-16 flex items-center justify-center text-white font-bold text-xl"
+                    className="h-48 flex flex-col items-center justify-center text-white font-bold text-xl"
                     style={{ backgroundColor: colors.primary }}
                   >
-                    {category.category}
+                    <span className="text-6xl mb-4">{category.icon}</span>
+                    <span className="text-2xl">{category.category}</span>
                   </div>
                   <div className="p-6">
-                    {category.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="mb-6 last:mb-0">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-lg font-semibold" style={{ color: colors.primaryDarkest }}>
-                            {item.name}
-                          </h3>
-                          <span className="text-lg font-bold" style={{ color: colors.primary }}>
-                            {item.price}
-                          </span>
-                        </div>
-                        <p className="text-gray-600 text-sm">{item.description}</p>
-                      </div>
-                    ))}
+                    <p className="text-gray-600 text-lg text-center leading-relaxed">{category.description}</p>
                   </div>
                 </div>
               ))}
@@ -247,35 +263,35 @@ export function RestaurantTemplate({ data }: TemplateProps) {
           </div>
         </section>
 
-        {/* Chef's Story - Split Layout */}
+        {/* Chef's Story - Simplified */}
         <section id="chef" className="py-20 px-8 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
                 <h2 className="text-5xl font-bold mb-8 font-serif" style={{ color: colors.primary }}>
-                  Meet Our Chef
+                  Culinary Excellence
                 </h2>
                 <p className="text-xl text-gray-700 mb-6 leading-relaxed">
-                  Chef Marcus Thompson brings over 15 years of culinary expertise to {data.businessName}. 
-                  Trained in Michelin-starred restaurants across Europe, Chef Thompson creates dishes 
-                  that celebrate both tradition and innovation.
+                  At {data.businessName}, we bring together passion, expertise, and the finest 
+                  ingredients to create unforgettable dining experiences. Our culinary team is 
+                  dedicated to crafting dishes that celebrate both tradition and innovation.
                 </p>
                 <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                  Our commitment to using locally sourced, seasonal ingredients ensures that every 
-                  dish tells a story of quality and craftsmanship.
+                  Every dish tells a story of quality and craftsmanship, using locally sourced, 
+                  seasonal ingredients to ensure freshness and flavor in every bite.
                 </p>
                 <div className="flex items-center space-x-8">
                   <div className="text-center">
-                    <div className="text-4xl font-bold" style={{ color: colors.primary }}>15+</div>
-                    <div className="text-gray-600">Years Experience</div>
+                    <div className="text-4xl font-bold" style={{ color: colors.primary }}>Fresh</div>
+                    <div className="text-gray-600">Daily Ingredients</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-4xl font-bold" style={{ color: colors.primary }}>3</div>
-                    <div className="text-gray-600">Michelin Stars</div>
+                    <div className="text-4xl font-bold" style={{ color: colors.primary }}>Premium</div>
+                    <div className="text-gray-600">Quality</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-4xl font-bold" style={{ color: colors.primary }}>50+</div>
-                    <div className="text-gray-600">Signature Dishes</div>
+                    <div className="text-4xl font-bold" style={{ color: colors.primary }}>5★</div>
+                    <div className="text-gray-600">Rated</div>
                   </div>
                 </div>
               </div>

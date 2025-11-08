@@ -1,4 +1,5 @@
-import { db } from './firebase'
+import { db, storage } from './firebase'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { 
   collection, 
   doc, 
@@ -21,7 +22,18 @@ export interface Demo {
   tagline: string
   pages: number
   primaryColor: string
+  accentColor?: string
+  backgroundColor?: string
+  backgroundOpacity?: number
+  titleFont?: string
+  phoneNumber?: string
+  address?: string
   logoUrl?: string
+  heroImageUrl?: string
+  classImage1Url?: string
+  classImage2Url?: string
+  classImage3Url?: string
+  aboutImageUrl?: string
   createdAt: number
   views: number
 }
@@ -30,6 +42,20 @@ interface DemoStats {
   totalDemos: number
   totalViews: number
   activeDemos: number
+}
+
+// LOCAL STORAGE MOCK - No Firebase required
+const LOCAL_STORAGE_KEY = 'regrowth_demos'
+
+function getLocalDemos(): Demo[] {
+  if (typeof window === 'undefined') return []
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
+  return stored ? JSON.parse(stored) : []
+}
+
+function saveLocalDemos(demos: Demo[]): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(demos))
 }
 
 export class FirebaseStorageManager {
@@ -44,43 +70,94 @@ export class FirebaseStorageManager {
       ...data,
     }
 
+    // Save to Firebase
     await setDoc(doc(db, this.DEMOS_COLLECTION, id), {
       ...newDemo,
       timestamp: serverTimestamp()
     })
 
+    // Also save to local storage as backup/cache
+    const demos = getLocalDemos()
+    demos.unshift(newDemo)
+    saveLocalDemos(demos)
+
     return newDemo
   }
 
-  static async getDemo(id: string): Promise<Demo | undefined> {
-    const docRef = doc(db, this.DEMOS_COLLECTION, id)
-    const docSnap = await getDoc(docRef)
+  static async uploadHeroImage(file: File): Promise<string> {
+    // Upload to Firebase Storage
+    const path = `demos/${uuidv4()}`
+    const storageRef = ref(storage, path)
+    await uploadBytes(storageRef, file)
+    const url = await getDownloadURL(storageRef)
+    return url
+  }
 
-    if (docSnap.exists()) {
-      return docSnap.data() as Demo
+  static async getDemo(id: string): Promise<Demo | undefined> {
+    // Try Firebase first
+    try {
+      const docRef = doc(db, this.DEMOS_COLLECTION, id)
+      const docSnap = await getDoc(docRef)
+      if (docSnap.exists()) {
+        return docSnap.data() as Demo
+      }
+    } catch (error) {
+      console.warn('Firebase fetch failed, falling back to local storage:', error)
     }
-    return undefined
+
+    // Fallback to local storage
+    const demos = getLocalDemos()
+    return demos.find(d => d.id === id)
   }
 
   static async getAllDemos(): Promise<Demo[]> {
-    const q = query(
-      collection(db, this.DEMOS_COLLECTION),
-      orderBy('createdAt', 'desc')
-    )
-    const querySnapshot = await getDocs(q)
-    
-    return querySnapshot.docs.map(doc => doc.data() as Demo)
+    // Try Firebase first
+    try {
+      const q = query(
+        collection(db, this.DEMOS_COLLECTION),
+        orderBy('createdAt', 'desc')
+      )
+      const querySnapshot = await getDocs(q)
+      return querySnapshot.docs.map(doc => doc.data() as Demo)
+    } catch (error) {
+      console.warn('Firebase fetch failed, falling back to local storage:', error)
+      // Fallback to local storage
+      return getLocalDemos()
+    }
   }
 
   static async deleteDemo(id: string): Promise<void> {
-    await deleteDoc(doc(db, this.DEMOS_COLLECTION, id))
+    // Delete from Firebase
+    try {
+      await deleteDoc(doc(db, this.DEMOS_COLLECTION, id))
+    } catch (error) {
+      console.warn('Firebase delete failed:', error)
+    }
+
+    // Also delete from local storage
+    const demos = getLocalDemos()
+    const filtered = demos.filter(d => d.id !== id)
+    saveLocalDemos(filtered)
   }
 
   static async recordView(id: string): Promise<void> {
-    const docRef = doc(db, this.DEMOS_COLLECTION, id)
-    await updateDoc(docRef, {
-      views: increment(1)
-    })
+    // Update Firebase
+    try {
+      const docRef = doc(db, this.DEMOS_COLLECTION, id)
+      await updateDoc(docRef, {
+        views: increment(1)
+      })
+    } catch (error) {
+      console.warn('Firebase view recording failed:', error)
+    }
+
+    // Also update local storage
+    const demos = getLocalDemos()
+    const demo = demos.find(d => d.id === id)
+    if (demo) {
+      demo.views++
+      saveLocalDemos(demos)
+    }
   }
 
   static async getStats(): Promise<DemoStats> {
