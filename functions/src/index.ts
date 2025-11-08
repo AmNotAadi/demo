@@ -1,14 +1,13 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import axios from 'axios'
-import { v4 as uuidv4 } from 'uuid'
-import cloudinary from 'cloudinary'
+import * as cloudinary from 'cloudinary'
 
 // Initialize Firebase Admin
 admin.initializeApp()
 
 // Configure Cloudinary
-cloudinary.config({
+cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
@@ -140,8 +139,9 @@ export const createDemo = functions.https.onCall(async (data, context) => {
     let logoUrl = ''
     if (logoFile) {
       try {
-        const logoBuffer = Buffer.from(logoFile, 'base64')
-        const logoResult = await cloudinary.uploader.upload(
+        // Convert base64 to buffer for validation (not used, but keeps for potential future use)
+        Buffer.from(logoFile, 'base64')
+        const logoResult = await cloudinary.v2.uploader.upload(
           `data:image/jpeg;base64,${logoFile}`,
           {
             folder: `regrowth-demos/${demoId}`,
@@ -292,7 +292,6 @@ export const cleanupExpiredDemos = functions.pubsub.schedule('0 2 * * *').onRun(
     console.log(`Found ${expiredDemos.size} expired demos to clean up`)
 
     const batch = db.batch()
-    const bucket = storage.bucket()
 
     for (const doc of expiredDemos.docs) {
       const demoId = doc.id
@@ -317,7 +316,7 @@ export const cleanupExpiredDemos = functions.pubsub.schedule('0 2 * * *').onRun(
       
       // Delete Cloudinary images
       try {
-        await cloudinary.api.delete_resources_by_prefix(`regrowth-demos/${demoId}/`)
+        await cloudinary.v2.api.delete_resources_by_prefix(`regrowth-demos/${demoId}/`)
       } catch (cloudinaryError) {
         console.error(`Failed to delete Cloudinary files for demo ${demoId}:`, cloudinaryError)
       }
